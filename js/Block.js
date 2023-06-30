@@ -95,6 +95,19 @@ class Block {
     removeChildren() {
         this.children = []
     }
+
+    /**
+     * Finds the number of leaf blocks of the blocks family tree.
+     * @returns The number of leaf blocks of its family tree.
+     */
+    numberOfLeafBlocks() {
+        if (this.children.length == 0) return 1
+        let leafBlocks = 0
+        for (let i = 0; i < this.children.length; i++) {
+            leafBlocks += this.children[i].numberOfLeafBlocks()
+        }
+        return leafBlocks
+    }
 }
 
 /**
