@@ -89,7 +89,7 @@ button {
     opacity: 0;
     overflow: hidden;
     text-align: left;
-    transition: width 0.3s ease, opacity 0.3s ease;
+    transition: width 0.2s ease, opacity 0.2s ease;
     width: 0;
 }
 
