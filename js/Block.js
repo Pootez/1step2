@@ -156,6 +156,7 @@ class Goal extends Block {
      */
     constructor(title = "", description = "") {
         super(title, description)
+        this.completed = false
     }
 
     /**
