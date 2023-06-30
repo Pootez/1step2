@@ -40,7 +40,7 @@ class Block {
      */
     getTree(num = -1) {
         if (this.children.length == 0 || num == 0) {
-            return this
+            return [this]
         }
         let arr = [this]
         for (let i = 0; i < this.children.length; i++) {
