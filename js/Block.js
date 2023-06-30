@@ -52,14 +52,14 @@ class Block {
     /**
     * Returns a branch of a family tree, given a list of child indexes.
     * @param {Array} arr The array of child indexes defining the family branch.
-    * @returns {Array|undefined} The array of children corresponding to the child indexes, or undefined if one or more of the indexes are invalid
+    * @returns {Array|undefined} The array of children corresponding to the child indexes (starting at this block), or undefined if one or more of the indexes are invalid
     */
     getBranch(arr) {
         if (arr.length <= 0) {
-            return undefined
+            return [this]
         }
         const index = arr.shift()
-        if (index >= this.children.length) {
+        if (index >= this.children.length || index < 0) {
             return undefined
         }
         if (arr.length == 1) {
