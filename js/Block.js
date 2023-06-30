@@ -125,19 +125,6 @@ class HomeGroup extends Group {
 }
 
 /**
- * Represents a Group Block
- */
-class Group extends Block {
-    /**
-     * @param {string} [title=""] - The title of the block.
-     * @param {string} [description=""] - The description of the block.
-     */
-    constructor(title = "", description = "") {
-        super(title, description)
-    }
-}
-
-/**
  * Represents a Goal Block
  */
 class Goal extends Block {
