@@ -52,20 +52,22 @@ class Block {
     /**
     * Returns a branch of a family tree, given a list of child indexes.
     * @param {Array} arr The array of child indexes defining the family branch.
+    * @param {number} depth The the current index in the depth search.
     * @returns {Array|undefined} The array of children corresponding to the child indexes (starting at this block), or undefined if one or more of the indexes are invalid
     */
-    getBranch(arr) {
-        if (arr.length <= 0) {
+    getBranch(arr, depth) {
+        if (arr.length <= 0 || depth >= arr.length) {
             return [this]
         }
-        const index = arr.shift()
+        const index = arr[depth]
         if (index >= this.children.length || index < 0) {
             return undefined
         }
-        if (arr.length == 1) {
+        if (arr.length == 0) {
             return [this.children[index]]
         }
-        let branch = this.children[index].getBranch(arr)
+        let branch = this.children[index].getBranch(arr, depth + 1)
+        if (!branch) return undefined
         branch.unshift(this.children[index])
         return branch
     }
@@ -77,7 +79,7 @@ class Block {
     addGoal(index) {
         index && index >= 0 && index <= this.children.length
             ? this.children.splice(index, 0, new Goal())
-            :  !index && this.children.push(new Goal())
+            : !index && this.children.push(new Goal())
     }
 
     /**
@@ -129,7 +131,7 @@ class Group extends Block {
     addGroup(index) {
         index && index >= 0 && index <= this.children.length
             ? this.children.splice(index, 0, new Group())
-            :  !index && this.children.push(new Group())
+            : !index && this.children.push(new Group())
     }
 }
 
