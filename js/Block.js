@@ -75,7 +75,6 @@ class Block {
      * @param {number} index The index of where the child is to be added. If undefined, it get's added at the end.
      */
     addGoal(index) {
-
         index && index >= 0 && index <= this.children.length
             ? this.children.splice(index, 0, new Goal())
             :  !index && this.children.push(new Goal())
@@ -108,6 +107,16 @@ class Group extends Block {
      */
     constructor(title = "", description = "") {
         super(title, description)
+    }
+
+    /**
+     * 
+     * @param {number} index The index of where the child is to be added. If undefined, it get's added at the end.
+     */
+    addGroup(index) {
+        index && index >= 0 && index <= this.children.length
+            ? this.children.splice(index, 0, new Group())
+            :  !index && this.children.push(new Group())
     }
 }
 
