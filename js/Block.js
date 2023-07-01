@@ -52,7 +52,7 @@ class Block {
     /**
     * Returns a branch of a family tree, given a list of child indexes.
     * @param {Array} arr The array of child indexes defining the family branch.
-    * @param {number} depth The the current index in the depth search.
+    * @param {number} depth The the current index in the depth search, starts at 0.
     * @returns {Array|undefined} The array of children corresponding to the child indexes (starting at this block), or undefined if one or more of the indexes are invalid
     */
     getBranch(arr, depth) {
@@ -159,6 +159,17 @@ class Goal extends Block {
     constructor(title = "", description = "") {
         super(title, description)
         this.completed = false
+    }
+
+    get completion() {
+        if (this.children.length == 0) {
+            return this.completed ? 1 : 0
+        }
+        let n = 0
+        for (let i = 0; i < this.children.length; i++) {
+            n += this.children[i].completion
+        }
+        return (n / this.children.length)
     }
 
     /**
