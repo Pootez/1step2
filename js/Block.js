@@ -51,6 +51,7 @@ class Block {
             let block = document.getElementById(this.id)
             block.style.backgroundColor = `rgb(${r}, ${g}, ${b})`
         }
+        this.children.forEach(id => {blocks.get(id).updateElements()})
     }
 
     /**
@@ -242,6 +243,11 @@ class Goal extends Block {
         return (n / this.children.length)
     }
 
+    setCompleted(bool) {
+        if (typeof bool == 'boolean') this.completed = bool
+        updateBlocks()
+    }
+
     /**
      * If Block has less than 2 children, create two children.
      */
@@ -269,3 +275,7 @@ class Goal extends Block {
 }
 
 blocks.set('home-block', new HomeGroup())
+
+function updateBlocks() {
+    blocks.get('home-block').updateElements()
+}
