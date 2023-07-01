@@ -98,7 +98,39 @@ button {
     width: var(--side-bar-expanded-width);
 }
 
-.block-element {
-    margin: 10px;
-    border-radius: 20px;
+.main-content {
+    height: 100%;
+}
+
+#main-content-grid {
+    height: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.block-grid {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    grid-template-rows: 1fr 1fr / 0;
+    height: 100%;
+    width: 100%;
+}
+
+.block-container {
+    width: 100%;
+    height: 100%;
+    grid-row: 1;
+    grid-column: 1 / -1;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.block {
+    box-sizing: border-box;
+    background-color: dodgerblue;
+    /* border: 2px solid rgb(0, 72, 255); */
+    height: 100%;
+    width: 100%;
+    border-radius: 1rem;
 }

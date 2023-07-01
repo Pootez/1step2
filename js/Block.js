@@ -1,4 +1,5 @@
-const blocks = new Map([
+const blocks = new Map()
+const blockCounts = new Map([
     ['group-count', 0],
     ['goal-count', 0]
 ])
@@ -10,11 +11,46 @@ class Block {
     /**
      * @param {string} [parent] - The parent of the block.
      */
-    constructor(parent = "block-home") {
+    constructor(parent = "main-content") {
         this.parent = parent
         this.title = ""
         this.description = ""
         this.children = []
+    }
+
+    createElements() {
+        let grid = document.createElement('div')
+        grid.id = this.id + '-grid'
+        grid.className = 'block-grid'
+
+        let container = document.createElement('div')
+        container.id = this.id + '-container'
+        container.className = 'block-container'
+
+        let block = document.createElement('div')
+        block.id = this.id
+        block.className = 'block'
+
+        container.appendChild(block)
+        grid.appendChild(container)
+        document.getElementById(this.parent + '-grid').appendChild(grid)
+    }
+
+    updateElements() {
+        let grid = document.getElementById(this.id + '-grid')
+        if (this.children.length == 0) {
+            grid.style.gridTemplate = '1fr 0fr / 1fr'
+        } else {
+            grid.style.gridTemplate = `1fr 1fr / repeat(${this.children.length}, 1fr)`
+        }
+        const completion = this.completion
+        if (completion != undefined) {
+            let r = completion < 0.5 ? 255 : (1 - (completion - 0.5) / 0.5) * 255
+            let g = completion < 0.5 ? (1 - completion / 0.5) * 99 + (completion / 0.5) * 215 : ((completion - 0.5) / 0.5) * 215 + (1 - (completion - 0.5) / 0.5) * 255
+            let b = completion < 0.5 ? (1 - completion / 0.5) * 71 + (completion / 0.5) * 0 : 0
+            let block = document.getElementById(this.id)
+            block.style.backgroundColor = `rgb(${r}, ${g}, ${b})`
+        }
     }
 
     /**
@@ -81,10 +117,12 @@ class Block {
      * @param {number} index The index of where the child is to be added. If undefined, it get's added at the end.
      */
     addGoal(index) {
-        const goal = newGoal(this.id)
+        const goal = new Goal(this.id)
+        blocks.set(goal.id, goal)
         index && index >= 0 && index <= this.children.length
             ? this.children.splice(index, 0, goal.id)
             : !index && this.children.push(goal.id)
+        this.updateElements()
     }
 
     /**
@@ -138,9 +176,13 @@ class Group extends Block {
      */
     constructor(parent) {
         super(parent)
-        const idNum = blocks.get('group-count')
+
+        const idNum = blockCounts.get('group-count')
         this.id = 'group-' + idNum
-        blocks.set('group-count', idNum + 1)
+        blockCounts.set('group-count', idNum + 1)
+
+        this.createElements()
+        this.updateElements()
     }
 
     /**
@@ -149,9 +191,11 @@ class Group extends Block {
      */
     addGroup(index) {
         const group = new Group(this.id)
+        blocks.set(group.id, group)
         index && index >= 0 && index <= this.children.length
             ? this.children.splice(index, 0, group)
             : !index && this.children.push(group)
+        this.updateElements()
     }
 }
 
@@ -176,15 +220,20 @@ class Goal extends Block {
      */
     constructor(parent) {
         super(parent)
-        const idNum = blocks.get('goal-count')
+
+        const idNum = blockCounts.get('goal-count')
         this.id = 'goal-' + idNum
-        blocks.set('goal-count', idNum + 1)
+        blockCounts.set('goal-count', idNum + 1)
         this.completed = false
+
+        this.createElements()
+        this.updateElements()
     }
 
     get completion() {
         if (this.children.length == 0) {
-            return this.completed ? 1 : 0
+            let completion = this.completed ? 1 : 0
+            return completion
         }
         let n = 0
         for (let i = 0; i < this.children.length; i++) {
@@ -208,14 +257,15 @@ class Goal extends Block {
      * @param {number} depth The depth of children under this block.
      * @param {number|undefined} width The count of children each goal will have. Default is 2, must be above 0.
      */
-    goalTree(depth, width = 2) {
+    createTree(depth, width = 2) {
         if (width > 0 && depth > 0) {
             this.removeChildren()
             for (let i = 0; i < width; i++) {
                 this.addGoal()
+                blocks.get(this.children[i]).createTree(depth - 1, width)
             }
         }
     }
 }
 
-blocks.set('block-home', new HomeGroup())
+blocks.set('home-block', new HomeGroup())
