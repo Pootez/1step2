@@ -20,50 +20,6 @@ class Block {
         this.childrenHidden = false
     }
 
-    createElements() {
-        let grid = document.createElement('div')
-        grid.id = this.id + '-grid'
-        grid.className = 'block-grid'
-
-        let container = document.createElement('div')
-        container.id = this.id + '-container'
-        container.className = 'block-container'
-
-        let block = document.createElement('div')
-        block.id = this.id
-        block.className = 'block'
-
-        container.appendChild(block)
-        grid.appendChild(container)
-        document.getElementById(this.parent + '-grid').appendChild(grid)
-
-        block.addEventListener('click', () => {
-            this.hideChildren(!this.childrenHidden)
-        })
-    }
-
-    updateElements() {
-        let grid = document.getElementById(this.id + '-grid')
-        if (this.childrenHidden) {
-            grid.style.gridTemplate = `auto 0 / repeat(${this.children.length}, min-content)`
-        }
-        else if (this.children.length == 0) {
-            grid.style.gridTemplate = '1fr 0fr / 1fr'
-        }
-        else {
-            grid.style.gridTemplate = `auto 50% / repeat(${this.children.length}, min-content)`
-        }
-        const completion = this.completion
-        if (completion != undefined) {
-            let r = completion < 0.5 ? 255 : (1 - (completion - 0.5) / 0.5) * 255
-            let g = completion < 0.5 ? (1 - completion / 0.5) * 99 + (completion / 0.5) * 215 : ((completion - 0.5) / 0.5) * 215 + (1 - (completion - 0.5) / 0.5) * 255
-            let b = completion < 0.5 ? (1 - completion / 0.5) * 71 + (completion / 0.5) * 0 : 0
-            let block = document.getElementById(this.id)
-            block.style.backgroundColor = `rgb(${r}, ${g}, ${b})`
-        }
-        this.children.forEach(id => { blocks.get(id).updateElements() })
-    }
-
     hide(bool) {
         this.hidden = bool
         bool ? document.getElementById(this.id + '-grid').classList.add('collapsed') : document.getElementById(this.id + '-grid').classList.remove('collapsed')
@@ -210,7 +166,43 @@ class Group extends Block {
         blockCounts.set('group-count', idNum + 1)
 
         this.createElements()
-        this.updateElements()
+    }
+
+    createElements() {
+        let grid = document.createElement('div')
+        grid.id = this.id + '-grid'
+        grid.className = 'group-grid'
+
+        let container = document.createElement('div')
+        container.id = this.id + '-container'
+        container.className = 'block-container'
+
+        let block = document.createElement('div')
+        block.id = this.id
+        block.className = 'block'
+
+        container.appendChild(block)
+        grid.appendChild(container)
+        document.getElementById(this.parent + '-grid').appendChild(grid)
+
+        block.addEventListener('click', () => {
+            this.hideChildren(!this.childrenHidden)
+        })
+    }
+
+    updateElements() {
+        let grid = document.getElementById(this.id + '-grid')
+        if (this.childrenHidden) {
+            grid.style.gridTemplate = `1fr 0 / repeat(${this.children.length}, 1fr)`
+        }
+        else if (this.children.length == 0) {
+            grid.style.gridTemplate = '1fr 0fr / 1fr'
+        }
+        else {
+            grid.style.gridTemplate = `1fr 1fr / repeat(${this.children.length}, 1fr)`
+        }
+
+        this.children.forEach(id => { blocks.get(id).updateElements() })
     }
 
     /**
@@ -255,7 +247,91 @@ class Goal extends Block {
         this.completed = false
 
         this.createElements()
-        this.updateElements()
+    }
+
+    createElements() {
+        let container = document.createElement('div')
+        container.id = this.id + '-container'
+        container.className = 'block-container'
+        container.style.gridArea = this.id
+
+        let block = document.createElement('div')
+        block.id = this.id
+        block.className = 'block'
+
+        let grid
+        if (this.parent.startsWith('group')) {
+            grid = document.createElement('div')
+            grid.id = this.id + '-grid'
+            grid.className = 'goal-grid'
+            document.getElementById(this.parent + '-grid').appendChild(grid)
+        } else {
+            let parent = blocks.get(this.parent)
+            while (parent.parent.startsWith('goal')) {
+                parent = blocks.get(parent.parent)
+            }
+            grid = document.getElementById(parent.id + '-grid')
+        }
+
+        container.appendChild(block)
+        grid.appendChild(container)
+
+        block.addEventListener('click', () => {
+            console.log(this.id)
+        })
+    }
+
+    updateElements() {
+        let grid
+        if (this.parent.startsWith('group')) {
+            grid = document.getElementById(this.id + '-grid')
+
+            let depth = 0
+            let getDepth = (block, n) => {
+                if (depth < n + 1) { depth = n + 1 }
+                block.children.forEach(obj => { getDepth(blocks.get(obj), n + 1) })
+            }
+            getDepth(this, 0)
+            
+            let gridAreas = []
+            let populateAreas = (id, n) => {
+                let block = blocks.get(id)
+                if (gridAreas[n] == undefined) { gridAreas[n] = ""}
+                let area = ' ' + block.id
+                let number = block.numberOfLeafBlocks
+                gridAreas[n] += area.repeat(number)
+                if (block.children.length > 0) {
+                    block.children.forEach(obj => { populateAreas(obj, n + 1) })
+                }
+                else {
+                    for (let i = n + 1; i < depth; i++) {
+                        if (gridAreas[i] == undefined) { gridAreas[i] = ""}
+                        gridAreas[i] += area
+                    }
+                }
+            }
+            populateAreas(this.id, 0)
+            gridAreas = gridAreas.map((str) => { return '"' + str.trimStart() + '"' }).join('\n')
+
+            grid.style.gridTemplateAreas = gridAreas
+            grid.style.gridTemplateColumns = `repeat(${this.numberOfLeafBlocks}, 1fr)`
+            grid.style.gridTemplateRows = `${depth}fr repeat(${depth - 1}, 1fr)`
+        }
+        else {
+            let parent = blocks.get(this.parent)
+            while (parent.parent.startsWith('goal')) {
+                parent = blocks.get(parent.parent)
+            }
+            grid = document.getElementById(parent.id + '-grid')
+        }
+
+        const completion = this.completion
+        let r = completion < 0.5 ? 255 : (1 - (completion - 0.5) / 0.5) * 255
+        let g = completion < 0.5 ? (1 - completion / 0.5) * 99 + (completion / 0.5) * 215 : ((completion - 0.5) / 0.5) * 215 + (1 - (completion - 0.5) / 0.5) * 255
+        let b = completion < 0.5 ? (1 - completion / 0.5) * 71 + (completion / 0.5) * 0 : 0
+        document.getElementById(this.id).style.backgroundColor = `rgb(${r}, ${g}, ${b})`
+
+        this.children.forEach(id => { blocks.get(id).updateElements() })
     }
 
     get completion() {
@@ -303,9 +379,7 @@ class Goal extends Block {
 }
 
 blocks.set('home-block', new HomeGroup())
-let numberOfLeafBlocks = 1
 
 function updateBlocks() {
     blocks.get('home-block').updateElements()
-    numberOfLeafBlocks = blocks.get('home-block').numberOfLeafBlocks
 }
