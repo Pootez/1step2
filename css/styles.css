@@ -3,6 +3,7 @@
     --background-secondary: #222;
     --side-bar-item-size: 4rem;
     --side-bar-expanded-width: 8rem;
+    --leaf-block-width: 25px;
 }
 
 body {
@@ -104,26 +105,33 @@ button {
 
 #main-content-grid {
     height: 100%;
-    padding: 5px;
+    padding: 10px;
     box-sizing: border-box;
 }
 
 .block-grid {
     display: grid;
     justify-items: center;
-    align-items: center;
+    align-items: stretch;
     grid-template-rows: 1fr 1fr / 0;
     height: 100%;
     width: 100%;
+    overflow: hidden;
+    transition: 0.2s ease-out;
 }
 
 .block-container {
+    min-width: var(--leaf-block-width);
     width: 100%;
     height: 100%;
     grid-row: 1;
     grid-column: 1 / -1;
-    padding: 4px;
+    padding: 2px;
     box-sizing: border-box;
+}
+
+.block-grid.collapsed {
+    height: 0;
 }
 
 .block {

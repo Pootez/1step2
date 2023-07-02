@@ -16,6 +16,8 @@ class Block {
         this.title = ""
         this.description = ""
         this.children = []
+        this.hidden = false
+        this.childrenHidden = false
     }
 
     createElements() {
@@ -34,14 +36,22 @@ class Block {
         container.appendChild(block)
         grid.appendChild(container)
         document.getElementById(this.parent + '-grid').appendChild(grid)
+
+        block.addEventListener('click', () => {
+            this.hideChildren(!this.childrenHidden)
+        })
     }
 
     updateElements() {
         let grid = document.getElementById(this.id + '-grid')
-        if (this.children.length == 0) {
+        if (this.childrenHidden) {
+            grid.style.gridTemplate = `auto 0 / repeat(${this.children.length}, min-content)`
+        }
+        else if (this.children.length == 0) {
             grid.style.gridTemplate = '1fr 0fr / 1fr'
-        } else {
-            grid.style.gridTemplate = `1fr 1fr / repeat(${this.children.length}, 1fr)`
+        }
+        else {
+            grid.style.gridTemplate = `auto 50% / repeat(${this.children.length}, min-content)`
         }
         const completion = this.completion
         if (completion != undefined) {
@@ -51,7 +61,21 @@ class Block {
             let block = document.getElementById(this.id)
             block.style.backgroundColor = `rgb(${r}, ${g}, ${b})`
         }
-        this.children.forEach(id => {blocks.get(id).updateElements()})
+        this.children.forEach(id => { blocks.get(id).updateElements() })
+    }
+
+    hide(bool) {
+        this.hidden = bool
+        bool ? document.getElementById(this.id + '-grid').classList.add('collapsed') : document.getElementById(this.id + '-grid').classList.remove('collapsed')
+        this.hideChildren(bool)
+    }
+
+    hideChildren(bool) {
+        this.childrenHidden = bool
+        this.children.forEach((id) => {
+            blocks.get(id).hide(bool)
+        })
+        this.updateElements()
     }
 
     /**
@@ -123,7 +147,7 @@ class Block {
         index && index >= 0 && index <= this.children.length
             ? this.children.splice(index, 0, goal.id)
             : !index && this.children.push(goal.id)
-        this.updateElements()
+        updateBlocks()
     }
 
     /**
@@ -141,7 +165,7 @@ class Block {
             const block = blocks.get(index)
             block.removeChildren()
             blocks.remove(index)
-            this.children.splice(index)
+            this.children.splice((this.children.indexOf(index)), 1)
         }
     }
 
@@ -149,8 +173,11 @@ class Block {
      * Sets the children to an empty array
      */
     removeChildren() {
-        for (let i = 0; i < this.children.length; i++) {
-            this.removeChild(0)
+        if (this.children.length > 0) {
+            for (let i = 0; i < this.children.length; i++) {
+                this.removeChild(0)
+            }
+            updateBlocks()
         }
     }
 
@@ -162,7 +189,7 @@ class Block {
         if (this.children.length == 0) return 1
         let leafBlocks = 0
         for (let i = 0; i < this.children.length; i++) {
-            leafBlocks += blocks.get(this.children[i]).numberOfLeafBlocks()
+            leafBlocks += blocks.get(this.children[i]).numberOfLeafBlocks
         }
         return leafBlocks
     }
@@ -194,9 +221,9 @@ class Group extends Block {
         const group = new Group(this.id)
         blocks.set(group.id, group)
         index && index >= 0 && index <= this.children.length
-            ? this.children.splice(index, 0, group)
-            : !index && this.children.push(group)
-        this.updateElements()
+            ? this.children.splice(index, 0, group.id)
+            : !index && this.children.push(group.id)
+        updateBlocks()
     }
 }
 
@@ -255,6 +282,7 @@ class Goal extends Block {
         if (this.children.length < 2) {
             this.addGoal()
             this.addGoal()
+            updateBlocks()
         }
     }
 
@@ -275,7 +303,9 @@ class Goal extends Block {
 }
 
 blocks.set('home-block', new HomeGroup())
+let numberOfLeafBlocks = 1
 
 function updateBlocks() {
     blocks.get('home-block').updateElements()
+    numberOfLeafBlocks = blocks.get('home-block').numberOfLeafBlocks
 }
