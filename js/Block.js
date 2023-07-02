@@ -3,6 +3,9 @@ const blockCounts = new Map([
     ['group-count', 0],
     ['goal-count', 0]
 ])
+let selection = {
+    block: 'group-0'
+}
 
 /**
  * Represents a Block.
@@ -120,7 +123,7 @@ class Group extends Block {
 
         let container = document.createElement('div')
         container.id = this.id + '-container'
-        container.className = 'block-container'
+        container.className = 'group-container'
 
         let block = document.createElement('div')
         block.id = this.id
@@ -132,22 +135,29 @@ class Group extends Block {
 
         block.addEventListener('click', () => {
             console.log(this.id)
+            selectBlock(this.id)
         })
     }
 
-    updateElements() {
+    updateElements(slct) {
         let grid = document.getElementById(this.id + '-grid')
-        if (this.childrenHidden) {
-            grid.style.gridTemplate = `1fr 0 / repeat(${this.children.length}, 1fr)`
-        }
-        else if (this.children.length == 0) {
-            grid.style.gridTemplate = '1fr 0fr / 1fr'
+        let slctHistoryIndex = slct.history.indexOf(this.id)
+        if ((slct.block != 'group-0' && this.id == 'group-0') || slctHistoryIndex >= 0) {
+            let slctIndex
+            if (slctHistoryIndex >= 0) { slctIndex = this.children.indexOf(slct.history[slctHistoryIndex - 1]) }
+            else { slctIndex = this.children.indexOf(slct.block) != -1 ? this.children.indexOf(slct.block) : this.children.indexOf(slct.history[slct.history.length - 1]) }
+            let left = slctIndex == 0 ? '' : `repeat(${slctIndex}, 0) `
+            let right = this.children.length - slctIndex - 1 == 0 ? '' : ` repeat(${this.children.length - slctIndex - 1}, 0)`
+            grid.style.gridTemplateColumns = left + '1fr' + right
+            grid.style.gridTemplateRows = '0 1fr'
         }
         else {
-            grid.style.gridTemplate = `1fr 1fr / repeat(${this.children.length}, 1fr)`
+            if (this.children.length > 0) { grid.style.gridTemplate = `1fr 1fr / repeat(${this.children.length}, 1fr)` }
+            else { grid.style.gridTemplate = '1fr / 1fr' }
         }
 
-        this.children.forEach(id => { blocks.get(id).updateElements() })
+
+        this.children.forEach(id => { blocks.get(id).updateElements(slct) })
     }
 
     /**
@@ -174,6 +184,7 @@ class HomeGroup extends Group {
     constructor(parent) {
         super(parent)
     }
+
 }
 
 /**
@@ -197,7 +208,7 @@ class Goal extends Block {
     createElements() {
         let container = document.createElement('div')
         container.id = this.id + '-container'
-        container.className = 'block-container'
+        container.className = 'goal-container'
         container.style.gridArea = this.id
 
         let block = document.createElement('div')
@@ -223,10 +234,11 @@ class Goal extends Block {
 
         block.addEventListener('click', () => {
             console.log(this.id)
+            selectBlock(this.id)
         })
     }
 
-    updateElements() {
+    updateElements(slct) {
         let grid
         if (this.parent.startsWith('group')) {
             grid = document.getElementById(this.id + '-grid')
@@ -237,11 +249,11 @@ class Goal extends Block {
                 block.children.forEach(obj => { getDepth(blocks.get(obj), n + 1) })
             }
             getDepth(this, 0)
-            
+
             let gridAreas = []
             let populateAreas = (id, n) => {
                 let block = blocks.get(id)
-                if (gridAreas[n] == undefined) { gridAreas[n] = ""}
+                if (gridAreas[n] == undefined) { gridAreas[n] = "" }
                 let area = ' ' + block.id
                 let number = block.numberOfLeafBlocks
                 gridAreas[n] += area.repeat(number)
@@ -250,17 +262,27 @@ class Goal extends Block {
                 }
                 else {
                     for (let i = n + 1; i < depth; i++) {
-                        if (gridAreas[i] == undefined) { gridAreas[i] = ""}
+                        if (gridAreas[i] == undefined) { gridAreas[i] = "" }
                         gridAreas[i] += area
                     }
                 }
             }
             populateAreas(this.id, 0)
-            gridAreas = gridAreas.map((str) => { return '"' + str.trimStart() + '"' }).join('\n')
 
+            if (slct.goal == this.id) {
+                let left = selection.leftLeaves == 0 ? '' : `repeat(${selection.leftLeaves}, 0)`
+                let right = selection.rightLeaves == 0 ? '' : `repeat(${selection.rightLeaves}, 0)`
+                let columns = left + `repeat(${blocks.get(selection.block).numberOfLeafBlocks}, 1fr)` + right
+                grid.style.gridTemplateColumns = columns
+                grid.style.gridTemplateRows = `repeat(${selection.depth}, 0) repeat(${depth - selection.depth}, 1fr)`
+            }
+            else {
+                grid.style.gridTemplateColumns = `repeat(${this.numberOfLeafBlocks}, 1fr)`
+                grid.style.gridTemplateRows = `${depth}fr repeat(${depth - 1}, 1fr)`
+            }
+
+            gridAreas = gridAreas.map((str) => { return '"' + str.trimStart() + '"' }).join('\n')
             grid.style.gridTemplateAreas = gridAreas
-            grid.style.gridTemplateColumns = `repeat(${this.numberOfLeafBlocks}, 1fr)`
-            grid.style.gridTemplateRows = `${depth}fr repeat(${depth - 1}, 1fr)`
         }
         else {
             let parent = blocks.get(this.parent)
@@ -323,11 +345,39 @@ class Goal extends Block {
     }
 }
 
-blocks.set('home-block', new HomeGroup('main-content'))
-let selection = {
-    block: 'home-block'
+blocks.set('group-0', new HomeGroup('main-content'))
+
+function selectBlock(blockId) {
+    selection.block = blockId
+    updateBlocks()
 }
 
 function updateBlocks() {
-    blocks.get('home-block').updateElements()
+    if (selection.block == 'group-0') {
+        selection.history = []
+    }
+    else {
+        selection.leftLeaves = 0
+        selection.rightLeaves = 0
+        selection.depth = 0
+        selection.history = []
+        let block = blocks.get(selection.block)
+        while (block.parent != 'group-0') {
+            let id = block.id
+            block = blocks.get(block.parent)
+            let slctIndex = block.children.indexOf(id)
+            if (block.id.startsWith('goal')) {
+                for (let i = 0; i < slctIndex; i++) {
+                    selection.leftLeaves += blocks.get(block.children[i]).numberOfLeafBlocks
+                }
+                for (let i = slctIndex + 1; i < block.children.length; i++) {
+                    selection.rightLeaves += blocks.get(block.children[i]).numberOfLeafBlocks
+                }
+                selection.depth += 1
+            }
+            selection.history.push(block.id)
+        }
+        selection.goal = block.id
+    }
+    blocks.get('group-0').updateElements(selection)
 }
