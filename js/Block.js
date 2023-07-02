@@ -16,22 +16,6 @@ class Block {
         this.title = ""
         this.description = ""
         this.children = []
-        this.hidden = false
-        this.childrenHidden = false
-    }
-
-    hide(bool) {
-        this.hidden = bool
-        bool ? document.getElementById(this.id + '-grid').classList.add('collapsed') : document.getElementById(this.id + '-grid').classList.remove('collapsed')
-        this.hideChildren(bool)
-    }
-
-    hideChildren(bool) {
-        this.childrenHidden = bool
-        this.children.forEach((id) => {
-            blocks.get(id).hide(bool)
-        })
-        this.updateElements()
     }
 
     /**
@@ -186,7 +170,7 @@ class Group extends Block {
         document.getElementById(this.parent + '-grid').appendChild(grid)
 
         block.addEventListener('click', () => {
-            this.hideChildren(!this.childrenHidden)
+            console.log(this.id)
         })
     }
 
@@ -378,7 +362,10 @@ class Goal extends Block {
     }
 }
 
-blocks.set('home-block', new HomeGroup())
+blocks.set('home-block', new HomeGroup('main-content'))
+let selection = {
+    block: 'home-block'
+}
 
 function updateBlocks() {
     blocks.get('home-block').updateElements()
