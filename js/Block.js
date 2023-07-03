@@ -283,7 +283,8 @@ class Goal extends Block {
                 let right = slct.rightLeaves == 0 ? '' : `repeat(${slct.rightLeaves}, 0)`
                 let columns = left + `repeat(${blocks.get(slct.block).numberOfLeafBlocks}, 1fr)` + right
                 grid.style.gridTemplateColumns = columns
-                grid.style.gridTemplateRows = `repeat(${index + 1}, 0) repeat(${depthNum}, 1fr)`
+                let childrenBlocks = depthNum == 1 ? '' : ` repeat(${depthNum - 1}, 1fr)`
+                grid.style.gridTemplateRows = `repeat(${index + 1}, 0) ${depthNum}fr` + childrenBlocks
             }
 
             gridAreas = gridAreas.map((str) => { return '"' + str.trimStart() + '"' }).join('\n')
