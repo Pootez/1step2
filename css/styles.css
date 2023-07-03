@@ -107,9 +107,14 @@ button {
     align-items: center;
 }
 
+.history-grid {
+    display: grid;
+    grid-template: var(--side-bar-item-size) min-content / min-content;
+}
+
 #history {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     height: min-content;
     width: min-content;
 }
@@ -137,8 +142,7 @@ button {
     border-radius: 10%;
 }
 
-#history-selected,
-.history-grid:has(#history-selected.collapsed) #history-home {
+.selected {
     cursor: default;
     background-color: #333;
     border-radius: 1rem;

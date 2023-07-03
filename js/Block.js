@@ -385,14 +385,23 @@ function updateBlocks() {
 
     const historyDiv = document.getElementById('history')
 
-    if (selection.history.length == 0) {
+    let hist
+    selection.history.reverse()
+    if (selection.block != undefined) {
+        hist = selection.history.concat([selection.block])
+    }
+
+    if (hist.length == 0 || hist[hist.length - 1] == 'group-0') {
         Array.from(historyDiv.children).forEach((obj) => {
             obj.classList.add('collapsed')
+            obj.classList.remove('selected')
         })
+        document.getElementById('history-home').classList.add('selected')
     }
     else {
-        for (let i = 0; i < selection.history.length; i++) {
-            let block = blocks.get(selection.history[i])
+        document.getElementById('history-home').classList.remove('selected')
+        for (let i = 0; i < hist.length; i++) {
+            let block = blocks.get(hist[i])
             const blockId = block.id
 
             const completion = block.completion
@@ -408,6 +417,7 @@ function updateBlocks() {
             if (historyDiv.children[i] == undefined) {
                 let button = document.createElement('button')
                 button.className = 'side-bar-item history-item'
+                if (i == hist.length - 1) { button.classList.add('selected') }
                 button.onclick = () => { selectBlock(blockId) }
                 let div = document.createElement('div')
                 div.className = 'side-bar-icon history-icon'
@@ -422,36 +432,17 @@ function updateBlocks() {
             else {
                 let button = historyDiv.children[i]
                 button.className = 'side-bar-item history-item'
+                if (i == hist.length - 1) { button.classList.add('selected') }
+                else { button.classList.remove('selected') }
                 button.onclick = () => { selectBlock(blockId) }
                 button.classList.remove('collapsed')
                 button.children[0].style.backgroundColor = color
                 button.children[1].innerHTML = block.id
             }
         }
-        for (let i = selection.history.length; i < historyDiv.children.length; i++) {
+        for (let i = hist.length; i < historyDiv.children.length; i++) {
             historyDiv.children[i].classList.add('collapsed')
+            historyDiv.children[i].classList.remove('selected')
         }
-    }
-
-    if (selection.block != 'group-0') {
-        let selectedBlock = blocks.get(selection.block)
-        const completion = selectedBlock.completion
-        console.log(completion)
-        let color
-        if (completion != undefined) {
-            let r = completion < 0.5 ? 255 : (1 - (completion - 0.5) / 0.5) * 255
-            let g = completion < 0.5 ? (1 - completion / 0.5) * 99 + (completion / 0.5) * 215 : ((completion - 0.5) / 0.5) * 215 + (1 - (completion - 0.5) / 0.5) * 255
-            let b = completion < 0.5 ? (1 - completion / 0.5) * 71 + (completion / 0.5) * 0 : 0
-            color = `rgb(${r}, ${g}, ${b})`
-        }
-        else { color = 'dodgerblue' }
-
-        let historySelected = document.getElementById('history-selected')
-        historySelected.classList.remove('collapsed')
-        historySelected.children[0].style.backgroundColor = color
-        historySelected.children[1].innerHTML = selectedBlock.id
-    }
-    else {
-        document.getElementById('history-selected').classList.add('collapsed')
     }
 }
