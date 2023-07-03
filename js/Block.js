@@ -241,12 +241,13 @@ class Goal extends Block {
         if (this.parent.startsWith('group')) {
             grid = document.getElementById(this.id + '-grid')
 
-            let depth = 0
+            let depthNum = 0
             let getDepth = (block, n) => {
-                if (depth < n + 1) { depth = n + 1 }
+                if (depthNum < n + 1) { depthNum = n + 1 }
                 block.children.forEach(obj => { getDepth(blocks.get(obj), n + 1) })
             }
             getDepth(this, 0)
+            const depth = depthNum
 
             let gridAreas = []
             let populateAreas = (id, n) => {
@@ -267,17 +268,18 @@ class Goal extends Block {
             }
             populateAreas(this.id, 0)
 
+            grid.style.gridTemplateColumns = `repeat(${this.numberOfLeafBlocks}, 1fr)`
+            grid.style.gridTemplateRows = `${depth}fr repeat(${depth - 1}, 1fr)`
+
             if (slct.goal == this.id && slct.block != this.id) {
                 let index = slct.history.indexOf(this.id)
+                depthNum = 0
+                getDepth(blocks.get(slct.block), 0)
                 let left = slct.leftLeaves == 0 ? '' : `repeat(${slct.leftLeaves}, 0)`
                 let right = slct.rightLeaves == 0 ? '' : `repeat(${slct.rightLeaves}, 0)`
                 let columns = left + `repeat(${blocks.get(slct.block).numberOfLeafBlocks}, 1fr)` + right
                 grid.style.gridTemplateColumns = columns
-                grid.style.gridTemplateRows = `repeat(${index + 1}, 0) repeat(${depth - index - 1}, 1fr)`
-            }
-            else {
-                grid.style.gridTemplateColumns = `repeat(${this.numberOfLeafBlocks}, 1fr)`
-                grid.style.gridTemplateRows = `${depth}fr repeat(${depth - 1}, 1fr)`
+                grid.style.gridTemplateRows = `repeat(${index + 1}, 0) repeat(${depthNum}, 1fr)`
             }
 
             gridAreas = gridAreas.map((str) => { return '"' + str.trimStart() + '"' }).join('\n')
