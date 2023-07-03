@@ -16,7 +16,7 @@ class Block {
      */
     constructor(parent = "main-content") {
         this.parent = parent
-        this.title = ""
+        this.title = "test"
         this.description = ""
         this.children = []
     }
@@ -125,7 +125,7 @@ class Group extends Block {
         container.id = this.id + '-container'
         container.className = 'group-container'
 
-        let block = document.createElement('div')
+        let block = document.createElement('button')
         block.id = this.id
         block.className = 'block'
 
@@ -211,7 +211,7 @@ class Goal extends Block {
         container.className = 'goal-container'
         container.style.gridArea = this.id
 
-        let block = document.createElement('div')
+        let block = document.createElement('button')
         block.id = this.id
         block.className = 'block'
 
@@ -355,6 +355,7 @@ function selectBlock(blockId) {
 function updateBlocks() {
     if (selection.block == 'group-0') {
         selection.history = []
+        selection.goal = undefined
     }
     else {
         selection.leftLeaves = 0
@@ -379,5 +380,78 @@ function updateBlocks() {
         }
         selection.goal = block.id
     }
+
     blocks.get('group-0').updateElements(selection)
+
+    const historyDiv = document.getElementById('history')
+
+    if (selection.history.length == 0) {
+        Array.from(historyDiv.children).forEach((obj) => {
+            obj.classList.add('collapsed')
+        })
+    }
+    else {
+        for (let i = 0; i < selection.history.length; i++) {
+            let block = blocks.get(selection.history[i])
+            const blockId = block.id
+
+            const completion = block.completion
+            let color
+            if (completion != undefined) {
+                let r = completion < 0.5 ? 255 : (1 - (completion - 0.5) / 0.5) * 255
+                let g = completion < 0.5 ? (1 - completion / 0.5) * 99 + (completion / 0.5) * 215 : ((completion - 0.5) / 0.5) * 215 + (1 - (completion - 0.5) / 0.5) * 255
+                let b = completion < 0.5 ? (1 - completion / 0.5) * 71 + (completion / 0.5) * 0 : 0
+                color = `rgb(${r}, ${g}, ${b})`
+            }
+            else { color = 'dodgerblue' }
+
+            if (historyDiv.children[i] == undefined) {
+                let button = document.createElement('button')
+                button.className = 'side-bar-item history-item'
+                button.onclick = () => { selectBlock(blockId) }
+                let div = document.createElement('div')
+                div.className = 'side-bar-icon history-icon'
+                div.style.backgroundColor = color
+                button.append(div)
+                let span = document.createElement('span')
+                span.className = 'side-bar-text'
+                span.innerHTML = block.id
+                button.append(span)
+                historyDiv.append(button)
+            }
+            else {
+                let button = historyDiv.children[i]
+                button.className = 'side-bar-item history-item'
+                button.onclick = () => { selectBlock(blockId) }
+                button.classList.remove('collapsed')
+                button.children[0].style.backgroundColor = color
+                button.children[1].innerHTML = block.id
+            }
+        }
+        for (let i = selection.history.length; i < historyDiv.children.length; i++) {
+            historyDiv.children[i].classList.add('collapsed')
+        }
+    }
+
+    if (selection.block != 'group-0') {
+        let selectedBlock = blocks.get(selection.block)
+        const completion = selectedBlock.completion
+        console.log(completion)
+        let color
+        if (completion != undefined) {
+            let r = completion < 0.5 ? 255 : (1 - (completion - 0.5) / 0.5) * 255
+            let g = completion < 0.5 ? (1 - completion / 0.5) * 99 + (completion / 0.5) * 215 : ((completion - 0.5) / 0.5) * 215 + (1 - (completion - 0.5) / 0.5) * 255
+            let b = completion < 0.5 ? (1 - completion / 0.5) * 71 + (completion / 0.5) * 0 : 0
+            color = `rgb(${r}, ${g}, ${b})`
+        }
+        else { color = 'dodgerblue' }
+
+        let historySelected = document.getElementById('history-selected')
+        historySelected.classList.remove('collapsed')
+        historySelected.children[0].style.backgroundColor = color
+        historySelected.children[1].innerHTML = selectedBlock.id
+    }
+    else {
+        document.getElementById('history-selected').classList.add('collapsed')
+    }
 }

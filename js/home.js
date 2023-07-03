@@ -3,6 +3,8 @@ document.getElementById('menu-btn').addEventListener('click', function () {
     document.getElementById('side-bar').classList.toggle('expanded')
 })
 
+document.getElementById('history-home').onclick = () => {selectBlock('group-0')}
+
 blocks.get('group-0').addGoal()
 blocks.get('group-0').addGoal()
 blocks.get('group-0').addGroup()
