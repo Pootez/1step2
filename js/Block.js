@@ -1,7 +1,7 @@
 const blocks = new Map()
 const blockCounts = new Map([
     ['group-count', 0],
-    ['goal-count', 0]
+    ['goal-count', 1]
 ])
 let selection = {
     block: 'group-0'
