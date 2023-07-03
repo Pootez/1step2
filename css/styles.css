@@ -37,10 +37,11 @@ button {
 }
 
 .side-bar {
+    box-sizing: content-box;
     background-color: var(--background-secondary);
     display: grid;
     grid-template: min-content 1fr min-content / min-content;
-    padding: 8px;
+    padding: 8px 10px 8px 8px;
     position: relative;
 }
 
@@ -76,11 +77,6 @@ button {
             rgba(128, 128, 128, 0));
 }
 
-.history-bar {
-    display: grid;
-    align-items: center;
-}
-
 .side-bar-item {
     align-items: center;
     display: grid;
@@ -104,6 +100,11 @@ button {
 .side-bar.expanded .side-bar-text {
     opacity: 1;
     width: var(--side-bar-expanded-width);
+}
+
+.history-bar {
+    display: grid;
+    align-items: center;
 }
 
 #history {
@@ -136,9 +137,10 @@ button {
     border-radius: 10%;
 }
 
-#history-selected {
+#history-selected,
+.history-grid:has(#history-selected.collapsed) #history-home {
+    cursor: default;
     background-color: #333;
-    /* margin: 4px; */
     border-radius: 1rem;
 }
 
