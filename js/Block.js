@@ -268,9 +268,11 @@ class Goal extends Block {
             }
             populateAreas(this.id, 0)
 
-            const maxDepth = depth > 5 ? 5 : depth
-            let subDepdthBlocks = depth == maxDepth ? '' : ` repeat(${depth - maxDepth}, 0)`
+            
             grid.style.gridTemplateColumns = `repeat(${this.numberOfLeafBlocks}, 1fr)`
+
+            let maxDepth = depth > 5 ? 5 : depth
+            let subDepdthBlocks = depth == maxDepth ? '' : ` repeat(${depth - maxDepth}, 0)`
             grid.style.gridTemplateRows = `${maxDepth}fr repeat(${maxDepth - 1}, 1fr)` + subDepdthBlocks
 
             if (slct.goal == this.id && slct.block != this.id) {
