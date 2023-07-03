@@ -149,9 +149,8 @@ class Group extends Block {
                     : this.children.indexOf(slct.block)
             }
             else { slctIndex = this.children.indexOf(slct.block) != -1 ? this.children.indexOf(slct.block) : this.children.indexOf(slct.history[slct.history.length - 1]) }
-            let left = slctIndex == 0 ? '' : `repeat(${slctIndex}, 0) `
-            let right = this.children.length - slctIndex - 1 == 0 ? '' : ` repeat(${this.children.length - slctIndex - 1}, 0)`
-            console.log(left, right)
+            let left = slctIndex <= 0 ? '' : `repeat(${slctIndex}, 0) `
+            let right = slctIndex >= this.children.length - 1 ? '' : ` repeat(${this.children.length - slctIndex - 1}, 0)`
             grid.style.gridTemplateColumns = left + '1fr' + right
             grid.style.gridTemplateRows = '0 1fr'
         }
@@ -278,7 +277,8 @@ class Goal extends Block {
 
             let maxDepth = depth > 5 ? 5 : depth
             let subDepdthBlocks = depth == maxDepth ? '' : ` repeat(${depth - maxDepth}, 0)`
-            grid.style.gridTemplateRows = `${maxDepth}fr repeat(${maxDepth - 1}, 1fr)` + subDepdthBlocks
+            if (maxDepth == 1) { grid.style.gridTemplateRows = '1fr' }
+            else { grid.style.gridTemplateRows = `${maxDepth - 1}fr repeat(${maxDepth - 1}, 1fr)` + subDepdthBlocks }
 
             if (slct.goal == this.id && slct.block != this.id) {
                 let index = slct.history.indexOf(this.id)
