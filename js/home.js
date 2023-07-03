@@ -27,3 +27,10 @@ blocks.get('goal-76').setCompleted(true)
 
 blocks.get('goal-74').split()
 blocks.get('goal-79').setCompleted(true)
+
+blocks.get('group-1').addGoal()
+blocks.get('group-1').addGoal()
+blocks.get('group-1').addGroup()
+blocks.get('group-1').addGoal()
+blocks.get('goal-82').split()
+blocks.get('goal-84').setCompleted(true)
