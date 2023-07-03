@@ -143,10 +143,15 @@ class Group extends Block {
         let slctHistoryIndex = slct.history.indexOf(this.id)
         if ((slct.block != 'group-0' && this.id == 'group-0') || slctHistoryIndex >= 0) {
             let slctIndex
-            if (slctHistoryIndex >= 0) { slctIndex = this.children.indexOf(slct.history[slctHistoryIndex - 1]) }
+            if (slctHistoryIndex >= 0) {
+                slctIndex = slctIndex > 0
+                    ? this.children.indexOf(slct.history[slctHistoryIndex - 1])
+                    : this.children.indexOf(slct.block)
+            }
             else { slctIndex = this.children.indexOf(slct.block) != -1 ? this.children.indexOf(slct.block) : this.children.indexOf(slct.history[slct.history.length - 1]) }
             let left = slctIndex == 0 ? '' : `repeat(${slctIndex}, 0) `
             let right = this.children.length - slctIndex - 1 == 0 ? '' : ` repeat(${this.children.length - slctIndex - 1}, 0)`
+            console.log(left, right)
             grid.style.gridTemplateColumns = left + '1fr' + right
             grid.style.gridTemplateRows = '0 1fr'
         }
@@ -268,7 +273,7 @@ class Goal extends Block {
             }
             populateAreas(this.id, 0)
 
-            
+
             grid.style.gridTemplateColumns = `repeat(${this.numberOfLeafBlocks}, 1fr)`
 
             let maxDepth = depth > 5 ? 5 : depth
