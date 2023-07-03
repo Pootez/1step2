@@ -40,7 +40,7 @@ button {
     background-color: var(--background-secondary);
     display: grid;
     grid-template: min-content 1fr min-content / min-content;
-    padding: 4px;
+    padding: 8px;
     position: relative;
 }
 
@@ -136,10 +136,9 @@ button {
     border-radius: 10%;
 }
 
-#history-home,
 #history-selected {
     background-color: #333;
-    margin: 4px;
+    /* margin: 4px; */
     border-radius: 1rem;
 }
 
