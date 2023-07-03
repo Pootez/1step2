@@ -134,7 +134,6 @@ class Group extends Block {
         document.getElementById(this.parent + '-grid').appendChild(grid)
 
         block.addEventListener('click', () => {
-            console.log(this.id)
             selectBlock(this.id)
         })
     }
@@ -233,7 +232,6 @@ class Goal extends Block {
         grid.appendChild(container)
 
         block.addEventListener('click', () => {
-            console.log(this.id)
             selectBlock(this.id)
         })
     }
@@ -269,12 +267,13 @@ class Goal extends Block {
             }
             populateAreas(this.id, 0)
 
-            if (slct.goal == this.id) {
-                let left = selection.leftLeaves == 0 ? '' : `repeat(${selection.leftLeaves}, 0)`
-                let right = selection.rightLeaves == 0 ? '' : `repeat(${selection.rightLeaves}, 0)`
-                let columns = left + `repeat(${blocks.get(selection.block).numberOfLeafBlocks}, 1fr)` + right
+            if (slct.goal == this.id && slct.block != this.id) {
+                let index = slct.history.indexOf(this.id)
+                let left = slct.leftLeaves == 0 ? '' : `repeat(${slct.leftLeaves}, 0)`
+                let right = slct.rightLeaves == 0 ? '' : `repeat(${slct.rightLeaves}, 0)`
+                let columns = left + `repeat(${blocks.get(slct.block).numberOfLeafBlocks}, 1fr)` + right
                 grid.style.gridTemplateColumns = columns
-                grid.style.gridTemplateRows = `repeat(${selection.depth}, 0) repeat(${depth - selection.depth}, 1fr)`
+                grid.style.gridTemplateRows = `repeat(${index + 1}, 0) repeat(${depth - index - 1}, 1fr)`
             }
             else {
                 grid.style.gridTemplateColumns = `repeat(${this.numberOfLeafBlocks}, 1fr)`
@@ -374,8 +373,8 @@ function updateBlocks() {
                 for (let i = slctIndex + 1; i < block.children.length; i++) {
                     selection.rightLeaves += blocks.get(block.children[i]).numberOfLeafBlocks
                 }
-                selection.depth += 1
             }
+            selection.depth += 1
             selection.history.push(block.id)
         }
         selection.goal = block.id
