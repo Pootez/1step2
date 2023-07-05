@@ -5,6 +5,17 @@ document.getElementById('menu-btn').addEventListener('click', function () {
 
 document.getElementById('history-home').onclick = () => {selectBlock('group-0')}
 
+document.getElementById('home-btn').onclick = () => {
+    document.getElementById('settings-page').classList.add('hidden')
+    document.getElementById('home-page').classList.remove('hidden')
+}
+document.getElementById('settings-btn').onclick = () => {
+    document.getElementById('home-page').classList.add('hidden')
+    document.getElementById('settings-page').classList.remove('hidden')
+}
+
+
+
 blocks.get('group-0').addGoal()
 blocks.get('group-0').addGoal()
 blocks.get('group-0').addGroup()

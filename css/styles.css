@@ -188,13 +188,34 @@ button {
     border-radius: 1rem;
 }
 
-.main-content {
+#main-content {
     height: 100%;
+}
+
+.page {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+#home-page {
+    height: 100%;
+    padding: 10px;
+}
+
+#settings-page {
+    padding: 10px 15%;
+}
+
+.settings-container {
+    padding: 1rem;
+    background-color: #222;
 }
 
 #main-content-grid {
     height: 100%;
-    padding: 10px;
 }
 
 .group-grid {
