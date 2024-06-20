@@ -18,10 +18,10 @@
                     <span class="side-bar-text">Menu</span>
                 </button>
                 <button id="home-btn" class="side-bar-item">
-                    <div id="home-icon" class="side-bar-icon">
-                        <div id="home-icon-step" class="home-icon-block"></div>
-                        <div id="home-icon-1" class="home-icon-block"></div>
-                        <div id="home-icon-2" class="home-icon-block"></div>
+                    <div id="home-icon" class="side-bar-icon blocks-icon">
+                        <div class="icon-step icon-block"></div>
+                        <div class="icon-1 icon-block"></div>
+                        <div class="icon-2 icon-block"></div>
                     </div>
                     <span class="side-bar-text">Home</span>
                 </button>
@@ -44,16 +44,37 @@
         </aside>
 
         <main id="main-content">
-            <div id="home-page" class="page">
+            <div id="home-page" class="page hidden">
                 <div id="main-content-grid" class="block-grid"></div>
             </div>
 
-            <div id="settings-page" class="page hidden">
+            <div id="settings-page" class="page">
                 <div class="settings-container">
                     <h1>Settings</h1>
-                    <article id="color-settings" class="settings-section">
-                        <h2>Colors</h2>
-                    </article>
+                    <section id="color-settings" class="settings-section">
+                        <h2 class="section-title">Colors</h2>
+                        <div class="section-content">
+                            <h3>Color preset</h3>
+                            <div id="color-presets">
+                                <div class="color-preset selected">
+                                    <div id="preset-1step2" class="blocks-icon">
+                                        <div class="icon-step icon-block"></div>
+                                        <div class="icon-1 icon-block"></div>
+                                        <div class="icon-2 icon-block"></div>
+                                    </div>
+                                    <span>1step2</span>
+                                </div>
+                                <div class="color-preset">
+                                    <div id="preset-custom" class="blocks-icon">
+                                        <div class="icon-step icon-block"></div>
+                                        <div class="icon-1 icon-block"></div>
+                                        <div class="icon-2 icon-block"></div>
+                                    </div>
+                                    <span>custom</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </main>
