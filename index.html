@@ -1,87 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="node_modules/normalize.css/normalize.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <title>1step2</title>
-</head>
-
-<body>
-    <div class="main-grid">
-        <aside id="side-bar" class="side-bar">
-            <nav class="nav-bar side-bar-section">
-                <button id="menu-btn" class="side-bar-item">
-                    <span id="menu-icon" class="side-bar-icon">☰</span>
-                    <span class="side-bar-text">Menu</span>
-                </button>
-                <button id="home-btn" class="side-bar-item">
-                    <div id="home-icon" class="side-bar-icon blocks-icon">
-                        <div class="icon-step icon-block"></div>
-                        <div class="icon-1 icon-block"></div>
-                        <div class="icon-2 icon-block"></div>
-                    </div>
-                    <span class="side-bar-text">Home</span>
-                </button>
-                <button id="settings-btn" class="side-bar-item">
-                    <span id="settings-icon" class="side-bar-icon">⚙️</span>
-                    <span class="side-bar-text">Settings</span>
-                </button>
-            </nav>
-
-            <div class="history-bar side-bar-section">
-                <div class="history-grid">
-                    <button id="history-home" class="side-bar-item history-item">
-                        <span class="side-bar-icon">🏠</span>
-                        <span class="side-bar-text">Home</span>
-                    </button>
-                    <div id="history">
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <main id="main-content">
-            <div id="home-page" class="page hidden">
-                <div id="main-content-grid" class="block-grid"></div>
-            </div>
-
-            <div id="settings-page" class="page">
-                <div class="settings-container">
-                    <h1>Settings</h1>
-                    <section id="color-settings" class="settings-section">
-                        <h2 class="section-title">Colors</h2>
-                        <div class="section-content">
-                            <h3>Color preset</h3>
-                            <div id="color-presets">
-                                <div class="color-preset selected">
-                                    <div id="preset-1step2" class="blocks-icon">
-                                        <div class="icon-step icon-block"></div>
-                                        <div class="icon-1 icon-block"></div>
-                                        <div class="icon-2 icon-block"></div>
-                                    </div>
-                                    <span>1step2</span>
-                                </div>
-                                <div class="color-preset">
-                                    <div id="preset-custom" class="blocks-icon">
-                                        <div class="icon-step icon-block"></div>
-                                        <div class="icon-1 icon-block"></div>
-                                        <div class="icon-2 icon-block"></div>
-                                    </div>
-                                    <span>custom</span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
-        </main>
-    </div>
-</body>
-
-<script src="js/Block.js"></script>
-<script src="js/index.js"></script>
-
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
