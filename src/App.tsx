@@ -1,6 +1,6 @@
-import { Box, Heading, Stack, StackDivider } from '@chakra-ui/react'
-import TaskBlock from './components/TaskBlock'
+import { Box, Heading, StackDivider } from '@chakra-ui/react'
 import { createContext, useState } from 'react'
+import TaskStack from './components/TaskStack'
 
 export interface Task {
   id: number
@@ -22,7 +22,7 @@ export const TaskContext = createContext<{ tasks: Task[]; setTasks: any }>({
   setTasks: () => {},
 })
 
-function App() {
+const App = () => {
   const [tasks, setTasks] = useState(initialTasks)
   const childrenTasks = tasks
     .map((task) => task.children)
@@ -36,15 +36,13 @@ function App() {
       <Box p={5}>
         <Heading>1step2</Heading>
         <br />
-        <Stack divider={<StackDivider />} spacing={5} direction="row">
+        <TaskStack direction="row" divider={<StackDivider />} spacing={5}>
           {tasks
             .filter((task) => {
               return childrenTasks.indexOf(task.id) === -1
             })
-            .map((task) => {
-              return <TaskBlock key={task.id} id={task.id} />
-            })}
-        </Stack>
+            .map((task) => task.id)}
+        </TaskStack>
       </Box>
     </TaskContext.Provider>
   )
