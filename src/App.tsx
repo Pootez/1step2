@@ -6,11 +6,13 @@ export interface Task {
   id: number
   title: string
   children: number[]
+  completed?: boolean
+  consecutive?: boolean
 }
 
 const initialTasks = [
   { id: 0, title: 'Task 1', children: [2, 3] },
-  { id: 1, title: 'Task 2', children: [] },
+  { id: 1, title: 'Task 2', children: [3] },
   { id: 2, title: 'Task 3', children: [] },
   { id: 3, title: 'Task 4', children: [] },
 ]
@@ -34,13 +36,13 @@ function App() {
       <Box p={5}>
         <Heading>1step2</Heading>
         <br />
-        <Stack divider={<StackDivider />} spacing="4">
+        <Stack divider={<StackDivider />} spacing={5} direction="row">
           {tasks
             .filter((task) => {
               return childrenTasks.indexOf(task.id) === -1
             })
             .map((task) => {
-              return <TaskBlock id={task.id} />
+              return <TaskBlock key={task.id} id={task.id} />
             })}
         </Stack>
       </Box>
