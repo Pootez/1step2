@@ -1,14 +1,21 @@
-import { useContext } from 'react'
-import { Task, TaskContext } from '../App'
+import { useContext, useState } from 'react'
+import { TaskContext } from '../App'
 import { Stack, StackProps } from '@chakra-ui/react'
 import TaskBlock from './TaskBlock'
 
 interface TaskStackProps extends StackProps {
-  children: number[]
+  children: (number | number[])[]
+  parallel?: boolean
+  active: boolean
 }
 
-const TaskStack = ({ children, ...props }: TaskStackProps) => {
-  const { tasks } = useContext(TaskContext)
+const TaskStack = ({
+  children,
+  parallel,
+  active,
+  ...props
+}: TaskStackProps) => {
+  useContext(TaskContext)
 
   return (
     <Stack
@@ -19,25 +26,51 @@ const TaskStack = ({ children, ...props }: TaskStackProps) => {
       {...props}
     >
       {children
-        .map((id) => tasks.find((t) => t.id === id) as Task)
-        .filter((t) => t)
         .reduceRight(
-          (acc, t) => {
-            const active =
-              acc.length === 0 ||
-              (acc[0].active &&
-                !!acc[0].task.completed &&
-                !!acc[0].task.consecutive)
-            return [{ task: t, active: active }, ...acc]
+          (acc, id) => {
+            if (parallel) {
+              return {
+                children: [
+                  { id: id, active: active, setNextActive: null },
+                  ...acc.children,
+                ],
+                nextActive: acc.nextActive,
+              }
+            }
+            const [nextActive, setNextActive] = useState(false)
+            return {
+              children: [
+                {
+                  id: id,
+                  active: acc.nextActive,
+                  setNextActive: setNextActive,
+                },
+                ...acc.children,
+              ],
+              nextActive: nextActive,
+            }
           },
-          [] as {
-            task: Task
-            active: boolean
-          }[]
+          { children: [], nextActive: active } as {
+            children: {
+              id: number | number[]
+              active: boolean
+              setNextActive: React.Dispatch<React.SetStateAction<boolean>> | null
+            }[]
+            nextActive: boolean
+          }
         )
-        .map(({ task, active }) => (
-          <TaskBlock key={task.id} id={task.id} active={active} />
-        ))}
+        .children.map((child, index) => {
+          return Array.isArray(child.id) ? (
+            <TaskStack
+              key={index}
+              active={child.active}
+              children={child.id}
+              parallel
+            />
+          ) : (
+            <TaskBlock key={index} id={child.id} active={child.active} setNextActive={child.setNextActive} />
+          )
+        })}
     </Stack>
   )
 }
