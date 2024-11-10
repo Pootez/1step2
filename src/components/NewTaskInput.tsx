@@ -11,31 +11,34 @@ const NewTaskInput = () => {
   if (!context) return
   const { tasks, setTasks } = context
 
-  const addTask = () => {
+  const addTask = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (text) setTasks([...tasks, new Task(text)])
   }
 
   return (
-    <TextField
-      fullWidth
-      size="medium"
-      placeholder="New Task..."
-      onChange={(e) => setText(e.target.value)}
-      slotProps={{
-        input: {
-          endAdornment: (
-            <Button
-              {...(!text && { disabled: true })}
-              variant={!text ? 'outlined' : 'contained'}
-              endIcon={<Add />}
-              onClick={addTask}
-            >
-              Add
-            </Button>
-          ),
-        },
-      }}
-    />
+    <form onSubmit={addTask}>
+        <TextField
+          fullWidth
+          size="medium"
+          placeholder="New Task..."
+          onChange={(e) => setText(e.target.value)}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <Button
+                  {...(!text && { disabled: true })}
+                  variant={!text ? 'outlined' : 'contained'}
+                  endIcon={<Add />}
+                  type='submit'
+                >
+                  Add
+                </Button>
+              ),
+            },
+          }}
+        />
+    </form>
   )
 }
 
