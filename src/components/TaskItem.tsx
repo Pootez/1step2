@@ -50,7 +50,7 @@ const TaskItem = ({
               setTasks(
                 tasks.map((t) =>
                   t.id == 1 && task.id != 1
-                    ? { ...t, children: [...t.children, task.id] }
+                    ? { ...t, children: [...t.children, task.id].filter((child, idx, arr) => arr.indexOf(child) == idx) }
                     : t
                 )
               )
