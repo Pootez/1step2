@@ -1,5 +1,6 @@
 import {
   Checkbox,
+  Collapse,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -63,20 +64,22 @@ const TaskItem = ({
           </ListItemButton>
         )}
       </ListItem>
-      {!isLeaf &&
-        open &&
-        task.children
-          .map((childId) => tasks.find((t) => t.id == childId))
-          .filter((child) => !!child)
-          .map((child, idx) => (
-            <TaskItem
-              key={[...tree, idx].join('-')}
-              tree={[...tree, idx]}
-              layer={layer + 1}
-            >
-              {child}
-            </TaskItem>
-          ))}
+      {!isLeaf && (
+        <Collapse orientation="vertical" in={open}>
+          {task.children
+            .map((childId) => tasks.find((t) => t.id == childId))
+            .filter((child) => !!child)
+            .map((child, idx) => (
+              <TaskItem
+                key={[...tree, idx].join('-')}
+                tree={[...tree, idx]}
+                layer={layer + 1}
+              >
+                {child}
+              </TaskItem>
+            ))}
+        </Collapse>
+      )}
     </>
   )
 }
