@@ -12,7 +12,7 @@ export const TaskCard = ({ children: task }: { children: Task }) => {
   return (
     <Card variant="outlined">
       <CardContent>
-        <h1>{task.title}</h1>
+        <h2>{task.title}</h2>
         <TaskList>
           {task.children.map(childId => tasks.find(t => t.id === childId)).filter(t  => !!t)}
         </TaskList>

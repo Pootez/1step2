@@ -1,6 +1,7 @@
-import { Box, Button, Drawer } from '@mui/material'
+import { Box, IconButton, Drawer } from '@mui/material'
+import { ChevronRight } from '@mui/icons-material'
 import { useContext } from 'react'
-import { TasksContext } from '../App'
+import { DrawerHeader, TasksContext, drawerWidth } from '../App'
 import { TaskCard } from './TaskCard'
 
 const TaskDrawer = ({ taskId = 0 }: { taskId?: number }) => {
@@ -12,8 +13,23 @@ const TaskDrawer = ({ taskId = 0 }: { taskId?: number }) => {
   if (!task) return
 
   return (
-    <Drawer variant="persistent" anchor="right" open={!!taskId}>
-      <Button onClick={() => setSelectedTask(0)}>Exit</Button>
+    <Drawer
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: drawerWidth,
+        },
+      }}
+      variant="persistent"
+      anchor="right"
+      open={!!taskId}
+    >
+      <DrawerHeader>
+        <IconButton onClick={() => setSelectedTask(0)}>
+          <ChevronRight />
+        </IconButton>
+      </DrawerHeader>
       <Box p={2}>
         <TaskCard>{task}</TaskCard>
       </Box>

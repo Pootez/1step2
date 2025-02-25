@@ -19,7 +19,6 @@ const NewTaskInput = () => {
   return (
     <form onSubmit={addTask}>
         <TextField
-          fullWidth
           size="medium"
           placeholder="New Task..."
           onChange={(e) => setText(e.target.value)}
