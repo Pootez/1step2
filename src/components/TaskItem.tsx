@@ -22,7 +22,7 @@ const TaskItem = ({
 }) => {
   const context = useContext(TasksContext)
   if (!context) return
-  const { tasks, setTasks } = context
+  const { tasks, setTasks, setSelectedTask } = context
 
   const [open, setOpen] = useState(true)
   const isLeaf = task.children.length == 0
@@ -46,14 +46,7 @@ const TaskItem = ({
         </ListItemIcon>
         <ListItemButton
           onClick={() => {
-            task.id != 0 &&
-              setTasks(
-                tasks.map((t) =>
-                  t.id == 1 && task.id != 1
-                    ? { ...t, children: [...t.children, task.id].filter((child, idx, arr) => arr.indexOf(child) == idx) }
-                    : t
-                )
-              )
+            setSelectedTask(task.id)
           }}
         >
           <ListItemText primary={task.title} />
